@@ -1,0 +1,62 @@
+#Import the dataset
+
+library(tidyverse) # metapackage with lots of helpful functions
+library(arules) #Mining association rules and frequent itemsets
+library(RColorBrewer) #Color schemes for maps and other graphics
+library(arulesViz) #Visualization of association rules
+
+#Read the data file 
+items <- read.csv("Market_Basket_Optimisation.csv", header = TRUE)
+items = read.transactions("Market_Basket_Optimisation.csv", 
+                            sep = ',', rm.duplicates = TRUE)
+
+#Inspect the dataset in R
+
+names(items)
+head(items)
+tail(items)
+summary(items)
+str(items)
+
+#Check the dimension of the “Market_Basket_Optimisation” dataset  
+dim(items)
+
+#Plot and explore the  “Market_Basket_Optimisation” dataset  with barplot() function  
+#Checking top 20 items sold in the dataset
+
+itemFrequencyPlot(items,topN=20,type="absolute",col=brewer.pal(7,'Greens'),space=(0.5),width=(0.5),xlab="Item Name",
+                  ylab="Frequency(absolute)",main="Absolute Item Frequency Plot")
+
+itemFrequencyPlot(items,topN=20, type="absolute", col=brewer.pal(7,"Greens")
+                  ,space=(0.5), width=(0.5),xlab="Item Name", ylab="Frequency(absolute)", main="Absolute Item Frequency Plot")
+
+
+#Again checking top 20 items sold in the given dataset with type=relative
+
+itemFrequencyPlot(items,topN=20, type="relative", col=brewer.pal(7,"Spectral")
+                  ,space=(0.5), width=(0.5),xlab="Item Name", ylab="Frequency(relative)", main="relative Item Frequency Plot")
+
+
+#Use the following code to create Association rules.
+#Training aproiri algorithm on dataset
+
+rules=apriori(data=items,parameter=list(support=0.004,
+                                          confidence=0.5,maxlen=20))
+summary(rules)
+
+inspect(rules)
+
+#visualise the results
+inspect(sort(rules,by='lift')[1:20])
+
+# Filter rules with confidence greater than 0.4 or 40%
+subRules<-rules[quality(rules)$confidence>0.4]
+plot(subRules)
+
+top35subRules <- head(subRules,n = 35,by ="confidence")
+plot(top35subRules,method ="graph")
+
+plot(rules, method="grouped") 
+
+plot(rules@quality)
+
